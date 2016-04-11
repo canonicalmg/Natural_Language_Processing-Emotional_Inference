@@ -12,7 +12,6 @@ ACCESS_TOKEN = twitter.obtain_access_token()
 twitter = Twython(APP_KEY, access_token=ACCESS_TOKEN)
 
 #________________________________________________________________
-#test
 
 def populateDBTwitter(file,searchTerm): #scrape tweets and write them to text file
 	search = twitter.search(q=searchTerm+" -Retweet -RT -ReTweet",   #**supply whatever query you want here**
@@ -60,82 +59,33 @@ def getString(file): #compiles text file into compressable string
 				1==1 #redundant boolean. Try needs the except clause
 	return returnString
 	
-def findEmotion(arbString, happyString, sadString, scaredString):
+def findEmotion(arbString, emotionStrings):
 
-	emotionStrings = [{'name':"happy", 'val':happyString},{'name':"sad", 'val':sadString},{'name':"Scared", 'val':scaredString}]
 	newEmotionStrings = []
-	arbStrings = []
-	compressedArbStrings = []
 	compressedStrings = []
 	arbDiffEmotions = []
-	minObj = {'name':"indeterminate", 'val':0}
-	minLength = len(min(emotionStrings))
-	print "minLength = ", minLength
+	minObj = emotionStrings[0]
 	for emotion in emotionStrings:
-		#print emotion
-		newEmotionString = (emotion['val'][0:minLength])
-		newEmotionStrings.append(newEmotionString)
-
-		arbStringToAppend = (emotion['val'][0:minLength] + arbString)
-		arbStrings.append(arbStringToAppend)
-
+		if len(emotion['val']) < len(minObj['val']):
+			minObj = emotion
+	minLength = len(minObj['val'])
+	for emotion in emotionStrings:
 		compressedArbString = (zlib.compress((emotion['val'][0:minLength] + arbString)))
-		compressedArbStrings.append(compressedArbString)
 
 		compressedString = (zlib.compress(emotion['val'][0:minLength]))
 		compressedStrings.append(compressedString)
 
 		arbDiffEmotion = (len(compressedArbString) - len(compressedString))
-		#arbDiffEmotion = (len((zlib.compress((emotion['val'][0:minLength] + arbString)))) - len((zlib.compress(emotion['val'][0:minLength]))))
+		print emotion['name'], "=", arbDiffEmotion
 		arbDiffEmotions.append({'name':emotion['name'], 'val':arbDiffEmotion})
-		if arbDiffEmotion > minObj['val']:
+		if arbDiffEmotion < minObj['val']:
 			minObj['val'] = arbDiffEmotion
 			minObj['name'] = emotion['name']
-		#print arbDiffEmotion
-	print "emotion =", newEmotionStrings
 	emotionStrings = newEmotionStrings
-	print "arbStrings =", arbStrings
+	print "minEmotion val =", minObj['val']
+	print "minEmotion = ", minObj['name']
 
-	print "minEmotion = ", minObj
-
-	
-	minLength = min(len(happyString), len(sadString), len(scaredString))
-	happyString = happyString[0:minLength]
-	sadString = sadString[0:minLength]
-	scaredString = scaredString[0:minLength]
-	
-	print "minLength = ", minLength
-	
-	arbStringHappy = happyString + arbString
-	arbStringSad = sadString + arbString
-	arbStringScared = scaredString + arbString
-	
-	compressedArbHappy = zlib.compress(arbStringHappy)
-	compressedArbSad = zlib.compress(arbStringSad)
-	compressedArbScared = zlib.compress(arbStringScared)
-	
-	compressedHappy = zlib.compress(happyString)
-	compressedSad = zlib.compress(sadString)
-	compressedScared = zlib.compress(scaredString)
-	
-	arbDiffHappy = len(compressedArbHappy) - len(compressedHappy)
-	arbDiffSad = len(compressedArbSad) - len(compressedSad)
-	arbDiffScared = len(compressedArbScared) - len(compressedScared)
-	
-	print "Uncompressed =", len(arbString)
-	print "Happiness =", arbDiffHappy
-	print "Sadness =", arbDiffSad
-	print "Scaredness =", arbDiffScared
-
-	minEmotion = min(arbDiffHappy, arbDiffSad, arbDiffScared)
-	if(arbDiffSad == arbDiffHappy == arbDiffScared):
-		print arbString, "is indeterminate"
-	elif(minEmotion == arbDiffSad):
-		print arbString, "is a SAD phrase"
-	elif(minEmotion == arbDiffScared):
-		print arbString, "is a SSCARED phrase"
-	elif(minEmotion == arbDiffHappy):
-		print arbString, "is a HAPPY phrase"
+	print "'",arbString, "' is a", minObj['name'], "phrase."
 		
 		
 def findEmotionRelative(arbString, happyString, sadString):
@@ -215,15 +165,18 @@ def QueryRelative(arbString):
 			
 def Query(arbString):
 	#removeDupes()
-	findEmotion(arbString, happinessString, sadnessString, scaredString)
+	findEmotion(arbString, EMOTIONS)
 
 populateDBTwitter("Happy.txt","#great") #happy, happiness, joy, fantastic, great
 populateDBTwitter("Sad.txt","#terrible") #sad, sadness, depressed, unhappy, terrible
 populateDBTwitter("Fear.txt", "#scared")
 
+
 happinessString = getString("Happy.txt")
 sadnessString = getString("Sad.txt")
 scaredString = getString("Fear.txt")
+EMOTIONS = [{'name':"Happy", 'val': happinessString}, {'name':"Sad", 'val':sadnessString},{'name':"Scared",'val':scaredString}]
+
 
 print "Size of happy = ", len(happinessString)
 print "Size of sad = ", len(sadnessString)
