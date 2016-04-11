@@ -12,7 +12,6 @@ ACCESS_TOKEN = twitter.obtain_access_token()
 twitter = Twython(APP_KEY, access_token=ACCESS_TOKEN)
 
 #________________________________________________________________
-#test
 
 
 def populateDBTwitter(file,searchTerm): #scrape tweets and write them to text file
