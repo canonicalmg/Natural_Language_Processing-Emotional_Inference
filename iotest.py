@@ -1,9 +1,10 @@
 import zlib
 import re
 from twython import Twython
+from properties import APP_SECRET
 
 APP_KEY = 'xpaIs2y73iJGzRftnMQalSFNV'
-APP_SECRET = 'C88wd3uK72aoFUprYYYLOJ2LmH7J0QQdpDBUWBOG33KeeOnEmT'
+#APP_SECRET = 'secret key'
 
 twitter = Twython(APP_KEY, APP_SECRET, oauth_version=2)
 ACCESS_TOKEN = twitter.obtain_access_token()
@@ -11,6 +12,7 @@ ACCESS_TOKEN = twitter.obtain_access_token()
 twitter = Twython(APP_KEY, access_token=ACCESS_TOKEN)
 
 #________________________________________________________________
+#test
 
 
 def populateDBTwitter(file,searchTerm): #scrape tweets and write them to text file
