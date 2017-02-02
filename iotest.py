@@ -3,7 +3,7 @@ import re
 from twython import Twython
 from properties import APP_SECRET
 
-APP_KEY = 'xpaIs2y73iJGzRftnMQalSFNV'
+APP_KEY = '**'
 #APP_SECRET = 'secret key'
 
 twitter = Twython(APP_KEY, APP_SECRET, oauth_version=2)
